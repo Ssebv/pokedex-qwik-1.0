@@ -1,38 +1,28 @@
-import { component$, Slot, useStyles$ } from '@builder.io/qwik';
-import { routeLoader$ } from '@builder.io/qwik-city';
-import type { RequestHandler } from '@builder.io/qwik-city';
-
-import Header from '~/components/starter/header/header';
-import Footer from '~/components/starter/footer/footer';
+import { component$, Slot, useContextProvider, useStore, useStyles$ } from '@builder.io/qwik';
+// import { routeLoader$ } from '@builder.io/qwik-city';
+// import type { RequestHandler } from '@builder.io/qwik-city';
 
 import styles from './styles.css?inline';
-
-export const onGet: RequestHandler = async ({ cacheControl }) => {
-  // Control caching for this request for best performance and to reduce hosting costs:
-  // https://qwik.builder.io/docs/caching/
-  cacheControl({
-    // Always serve a cached response by default, up to a week stale
-    staleWhileRevalidate: 60 * 60 * 24 * 7,
-    // Max once every 5 seconds, revalidate on the server to get a fresh version of this page
-    maxAge: 5,
-  });
-};
-
-export const useServerTimeLoader = routeLoader$(() => {
-  return {
-    date: new Date().toISOString(),
-  };
-});
+import Navbar from '~/components/shared/navbar/navbar';
+import { PokemonGameContext, type PokemonGameState } from '~/context';
 
 export default component$(() => {
   useStyles$(styles);
+
+  const pokemonGame = useStore<PokemonGameState>({
+    pokemonId: 4,
+    isPokemonVisible: true,
+    showBackImage: false,
+  });
+
+  useContextProvider(PokemonGameContext, pokemonGame);
+  
   return (
     <>
-      <Header />
-      <main>
+      <Navbar />
+      <main class= "flex flex-col items-center justify-center flex-1 px-20 text-center"> 
         <Slot />
       </main>
-      <Footer />
     </>
   );
 });
